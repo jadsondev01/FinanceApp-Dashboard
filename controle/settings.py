@@ -3,17 +3,26 @@ Django settings for controle project.
 """
 
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# ========================
 # SECURITY
-SECRET_KEY = 'django-insecure-m-83nkr!$8^zvkpc%!k_8hjz0*3()i!b0cet0+=b1tgwo#-n%-'
-DEBUG = True
-ALLOWED_HOSTS = []
+# ========================
+
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
 
 
+# ========================
 # APPLICATIONS
+# ========================
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -26,9 +35,16 @@ INSTALLED_APPS = [
 ]
 
 
+# ========================
 # MIDDLEWARE
+# ========================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # WhiteNoise (serve arquivos estáticos na Vercel)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -41,11 +57,14 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'controle.urls'
 
 
+# ========================
 # TEMPLATES
+# ========================
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -57,27 +76,14 @@ TEMPLATES = [
     },
 ]
 
-
-# TEMPLATES
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # <-- aqui adicionamos a pasta global de templates
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
 
 WSGI_APPLICATION = 'controle.wsgi.application'
 
 
+# ========================
 # DATABASE
+# ========================
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -86,7 +92,10 @@ DATABASES = {
 }
 
 
+# ========================
 # PASSWORD VALIDATION
+# ========================
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -95,18 +104,31 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# ========================
 # INTERNATIONALIZATION
+# ========================
+
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
 
+# ========================
 # STATIC FILES
-STATIC_URL = 'static/'
+# ========================
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
+# ========================
 # LOGIN CONFIG
+# ========================
+
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
