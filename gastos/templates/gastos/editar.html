@@ -1,0 +1,9 @@
+<h2>Editar Gasto</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Salvar</button>
+</form>
+
+<a href="{% url 'dashboard' %}">Voltar</a>
